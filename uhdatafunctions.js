@@ -3,12 +3,29 @@
  * Created by Rory on 9/28/2015.
  */
 
+/* globals _ */
+/* exported totalDegrees, percentageHawaiian, totalDegreesByYear, listCampuses, listCampusDegrees, maxDegrees, doctoralDegreePrograms */
+
+
+
 /**
  * This function can be passed uhdata and returns the total number of degrees awarded in the data set.
  * @param data The data being read.
  */
 function totalDegrees(data) {
+  if(!_.every(data, hasAwards)) {
+    throw new Error("No Awards property.");
+  }
   return _.reduce(_.pluck(data, "AWARDS"), addAwards, 0);
+}
+
+/**
+ * Returns true if has property Awards.
+ * @param record
+ * @returns {boolean}
+ */
+function hasAwards(record) {
+  return record.hasOwnProperty("AWARDS");
 }
 
 /**
@@ -18,6 +35,9 @@ function totalDegrees(data) {
  * @returns {number}
  */
 function addAwards(memo, num) {
+  if(isNaN(num)) {
+    throw new Error("Not a number.");
+  }
   return memo + num;
 }
 
@@ -55,7 +75,7 @@ function totalDegreesByYear(data, year) {
  * @returns {boolean}
  */
 function filterYear(item) {
-  return item.FISCAL_YEAR == this;
+  return item.FISCAL_YEAR === this;
 }
 
 /**
@@ -79,10 +99,9 @@ function listCampusDegrees(data) {
 /**
  * Helper function that reduces given degrees to its total amount.
  * @param value
- * @param key
  * @returns {number}
  */
-function changeToTotalDegrees(value, key) {
+function changeToTotalDegrees(value) {
   return _.reduce(_.pluck(value, "AWARDS"), addAwards, 0);
 }
 
@@ -110,5 +129,5 @@ function doctoralDegreePrograms(data) {
  * @returns {boolean}
  */
 function filterDoc(item) {
-  return item.OUTCOME == "Doctoral Degrees";
+  return item.OUTCOME === "Doctoral Degrees";
 }
